@@ -11,7 +11,6 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Marketplacer\Base\Model\Attribute\AttributeOptionHandler;
-use Marketplacer\Brand\Api\Data\BrandInterface;
 use Marketplacer\Brand\Api\Data\BrandInterfaceFactory;
 use Marketplacer\BrandApi\Api\Data\MarketplacerBrandSearchResultsInterfaceFactory;
 use Marketplacer\Brand\Model\ResourceModel\Brand\Collection;
@@ -111,6 +110,11 @@ class BrandRepositoryTest extends TestCase
     private $brandDataToOptionSetter;
 
     /**
+     * @var \Magento\Catalog\Model\ResourceModel\Eav\Attribute&MockObject
+     */
+    private $attributeMock;
+
+    /**
      * {@inheritdoc}
      */
     protected function setUp(): void
@@ -176,6 +180,11 @@ class BrandRepositoryTest extends TestCase
                 'collectionProcessor'        => $this->collectionProcessorMock,
                 'logger'                     => $this->loggerMock,
             ]
+        );
+
+        $this->attributeMock = $this->createPartialMock(
+            \Magento\Catalog\Model\ResourceModel\Eav\Attribute::class,
+            []
         );
     }
 
@@ -567,8 +576,8 @@ class BrandRepositoryTest extends TestCase
         $rowId = 10;
         $name = 'Test Brand';
 
-        /** @var \Marketplacer\Brand\Model\Brand $brand */
-        $brand = $this->objectManager->getObject(\Marketplacer\Brand\Model\Brand::class);
+        /** @var Brand $brand */
+        $brand = $this->objectManager->getObject(Brand::class);
         $brand
             ->setOptionId(null)
             ->setRowId(null)
@@ -577,9 +586,8 @@ class BrandRepositoryTest extends TestCase
             ->setStoreId($requestedStoreId);
 
         $this->brandValidatorMock->method('validate')->willReturn(null);
-
-        $attributeMock = $this->objectManager->getObject(\Magento\Catalog\Model\ResourceModel\Eav\Attribute::class);
-        $this->brandAttributeRetrieverMock->method('getAttribute')->willReturn($attributeMock);
+        
+        $this->brandAttributeRetrieverMock->method('getAttribute')->willReturn($this->attributeMock);
 
         /** @var \Magento\Eav\Model\Entity\Attribute\Option $option */
         $option = $this->objectManager->getObject(\Magento\Eav\Model\Entity\Attribute\Option::class);
@@ -601,7 +609,6 @@ class BrandRepositoryTest extends TestCase
         $this->assertEquals($rowId, $brand->getRowId());
         $this->assertEquals($brandId, $brand->getBrandId());
         $this->assertEquals('test-brand', $brand->getUrlKey());
-
     }
 
     public function testSaveCreateNewValidBrandOnStoreLevel()
@@ -612,8 +619,8 @@ class BrandRepositoryTest extends TestCase
         $rowId = 10;
         $name = 'Test Brand';
 
-        /** @var \Marketplacer\Brand\Model\Brand $brand */
-        $brand = $this->objectManager->getObject(\Marketplacer\Brand\Model\Brand::class);
+        /** @var Brand $brand */
+        $brand = $this->objectManager->getObject(Brand::class);
         $brand
             ->setOptionId(null)
             ->setRowId(null)
@@ -622,9 +629,8 @@ class BrandRepositoryTest extends TestCase
             ->setStoreId($requestedStoreId);
 
         $this->brandValidatorMock->method('validate')->willReturn(null);
-
-        $attributeMock = $this->objectManager->getObject(\Magento\Catalog\Model\ResourceModel\Eav\Attribute::class);
-        $this->brandAttributeRetrieverMock->method('getAttribute')->willReturn($attributeMock);
+        
+        $this->brandAttributeRetrieverMock->method('getAttribute')->willReturn($this->attributeMock);
 
         /** @var \Magento\Eav\Model\Entity\Attribute\Option $option */
         $option = $this->objectManager->getObject(\Magento\Eav\Model\Entity\Attribute\Option::class);
@@ -654,8 +660,8 @@ class BrandRepositoryTest extends TestCase
         $rowId = 10;
         $name = 'Test Brand';
 
-        /** @var \Marketplacer\Brand\Model\Brand $brand */
-        $brand = $this->objectManager->getObject(\Marketplacer\Brand\Model\Brand::class);
+        /** @var Brand $brand */
+        $brand = $this->objectManager->getObject(Brand::class);
         $brand
             ->setOptionId(null)
             ->setRowId(null)
@@ -664,9 +670,8 @@ class BrandRepositoryTest extends TestCase
             ->setStoreId($requestedStoreId);
 
         $this->brandValidatorMock->method('validate')->willReturn(null);
-
-        $attributeMock = $this->objectManager->getObject(\Magento\Catalog\Model\ResourceModel\Eav\Attribute::class);
-        $this->brandAttributeRetrieverMock->method('getAttribute')->willReturn($attributeMock);
+        
+        $this->brandAttributeRetrieverMock->method('getAttribute')->willReturn($this->attributeMock);
 
         /** @var \Magento\Eav\Model\Entity\Attribute\Option $option */
         $option = $this->objectManager->getObject(\Magento\Eav\Model\Entity\Attribute\Option::class);
@@ -695,8 +700,8 @@ class BrandRepositoryTest extends TestCase
         $option->setIsDefault(0)->setSortOrder(0)->setValue(0);
         $option->setValue($optionId);
 
-        /** @var \Marketplacer\Brand\Model\Brand $brand */
-        $brand = $this->objectManager->getObject(\Marketplacer\Brand\Model\Brand::class);
+        /** @var Brand $brand */
+        $brand = $this->objectManager->getObject(Brand::class);
         $brand
             ->setOptionId($optionId)
             ->setRowId(null)
@@ -704,9 +709,8 @@ class BrandRepositoryTest extends TestCase
             ->setName($name)
             ->setStoreId($requestedStoreId)
             ->setAttributeOption($option);
-
-        $attributeMock = $this->objectManager->getObject(\Magento\Catalog\Model\ResourceModel\Eav\Attribute::class);
-        $this->brandAttributeRetrieverMock->method('getAttribute')->willReturn($attributeMock);
+        
+        $this->brandAttributeRetrieverMock->method('getAttribute')->willReturn($this->attributeMock);
 
         $this->attributeOptionHandlerMock->method('isAttributeOptionIdExist')->willReturn(true);
 
@@ -729,7 +733,8 @@ class BrandRepositoryTest extends TestCase
         $this->assertEquals('test-brand', $brand->getUrlKey());
     }
 
-    public function testSaveExistingBrandWithExistingOptionName() {
+    public function testSaveExistingBrandWithExistingOptionName()
+    {
         $brandId = 5;
         $optionId = 5;
         $requestedStoreId = 1;
@@ -740,8 +745,8 @@ class BrandRepositoryTest extends TestCase
         $option->setIsDefault(0)->setSortOrder(0)->setValue(0);
         $option->setValue($optionId);
 
-        /** @var \Marketplacer\Brand\Model\Brand $brand */
-        $brand = $this->objectManager->getObject(\Marketplacer\Brand\Model\Brand::class);
+        /** @var Brand $brand */
+        $brand = $this->objectManager->getObject(Brand::class);
         $brand
             ->setOptionId($optionId)
             ->setRowId(null)
@@ -749,9 +754,8 @@ class BrandRepositoryTest extends TestCase
             ->setName($name)
             ->setStoreId($requestedStoreId)
             ->setAttributeOption($option);
-
-        $attributeMock = $this->objectManager->getObject(\Magento\Catalog\Model\ResourceModel\Eav\Attribute::class);
-        $this->brandAttributeRetrieverMock->method('getAttribute')->willReturn($attributeMock);
+        
+        $this->brandAttributeRetrieverMock->method('getAttribute')->willReturn($this->attributeMock);
 
         $this->attributeOptionHandlerMock->method('isAttributeOptionIdExist')->willReturn(true);
 
@@ -783,8 +787,8 @@ class BrandRepositoryTest extends TestCase
         $option->setIsDefault(0)->setSortOrder(0)->setValue(0);
         $option->setValue($optionId);
 
-        /** @var \Marketplacer\Brand\Model\Brand $brand */
-        $brand = $this->objectManager->getObject(\Marketplacer\Brand\Model\Brand::class);
+        /** @var Brand $brand */
+        $brand = $this->objectManager->getObject(Brand::class);
         $brand
             ->setOptionId($optionId)
             ->setRowId(null)
@@ -792,9 +796,8 @@ class BrandRepositoryTest extends TestCase
             ->setName($name)
             ->setStoreId($requestedStoreId)
             ->setAttributeOption($option);
-
-        $attributeMock = $this->objectManager->getObject(\Magento\Catalog\Model\ResourceModel\Eav\Attribute::class);
-        $this->brandAttributeRetrieverMock->method('getAttribute')->willReturn($attributeMock);
+        
+        $this->brandAttributeRetrieverMock->method('getAttribute')->willReturn($this->attributeMock);
 
         $this->attributeOptionHandlerMock->method('isAttributeOptionIdExist')->willReturn(false);
 
@@ -825,12 +828,11 @@ class BrandRepositoryTest extends TestCase
         $this->brandMock->method('getRowId')->willReturn($rowId);
         $this->brandMock->method('getOptionId')->willReturn($optionId);
         $this->collectionMock->method('getFirstItem')->willReturn($this->brandMock);
-
-        $attributeMock = $this->objectManager->getObject(\Magento\Catalog\Model\ResourceModel\Eav\Attribute::class);
+        
         $this->brandAttributeRetrieverMock
             ->expects($this->once())
             ->method('getAttribute')
-            ->willReturn($attributeMock);
+            ->willReturn($this->attributeMock);
 
         $this->attributeOptionHandlerMock
             ->expects($this->once())
@@ -860,12 +862,11 @@ class BrandRepositoryTest extends TestCase
 
         $this->brandMock->method('getRowId')->willReturn(null);
         $this->collectionMock->method('getFirstItem')->willReturn($this->brandMock);
-
-        $attributeMock = $this->objectManager->getObject(\Magento\Catalog\Model\ResourceModel\Eav\Attribute::class);
+        
         $this->brandAttributeRetrieverMock
             ->expects($this->never())
             ->method('getAttribute')
-            ->willReturn($attributeMock);
+            ->willReturn($this->attributeMock);
 
         $this->attributeOptionHandlerMock
             ->expects($this->never())
@@ -890,12 +891,11 @@ class BrandRepositoryTest extends TestCase
     public function testIsBrandExistingOptionExist()
     {
         $brandId = 5;
-
-        $attributeMock = $this->objectManager->getObject(\Magento\Catalog\Model\ResourceModel\Eav\Attribute::class);
+        
         $this->brandAttributeRetrieverMock
             ->expects($this->once())
             ->method('getAttribute')
-            ->willReturn($attributeMock);
+            ->willReturn($this->attributeMock);
 
         $this->attributeOptionHandlerMock
             ->expects($this->once())
@@ -912,12 +912,11 @@ class BrandRepositoryTest extends TestCase
     public function testIsBrandMissingOptionExist()
     {
         $brandId = 5;
-
-        $attributeMock = $this->objectManager->getObject(\Magento\Catalog\Model\ResourceModel\Eav\Attribute::class);
+        
         $this->brandAttributeRetrieverMock
             ->expects($this->once())
             ->method('getAttribute')
-            ->willReturn($attributeMock);
+            ->willReturn($this->attributeMock);
 
         $this->attributeOptionHandlerMock
             ->expects($this->once())
@@ -926,5 +925,4 @@ class BrandRepositoryTest extends TestCase
 
         $this->assertFalse($this->repository->isBrandOptionExist($brandId));
     }
-
 }

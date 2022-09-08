@@ -103,7 +103,7 @@ class BrandProcessorTest extends TestCase
     public function testProcessBrandUrlRewrites()
     {
         $brandId = '5';
-        /** @var \Marketplacer\Brand\Model\Brand $brand */
+        /** @var Brand $brand */
         $brand = $this->objectManager->getObject(Brand::class);
         $brand->setData([
             BrandInterface::BRAND_ID => $brandId,
@@ -144,13 +144,13 @@ class BrandProcessorTest extends TestCase
 
         $this->storageMock->method('replace')->with([$urlRewrite1, $urlRewrite2]);
 
-        $this->brandProcessor->processBrandUrlRewrites($brand);
+        static::assertEquals(true, $this->brandProcessor->processBrandUrlRewrites($brand));
     }
 
     public function testProcessBrandUrlRewritesWithMissingBrand()
     {
         $brandId = '5';
-        /** @var \Marketplacer\Brand\Model\Brand $brand */
+        /** @var Brand $brand */
         $brand = $this->objectManager->getObject(Brand::class);
         $brand->setData([
             BrandInterface::BRAND_ID => $brandId,
@@ -171,7 +171,7 @@ class BrandProcessorTest extends TestCase
         $brandId = '5';
         $storeId = '1';
 
-        /** @var \Marketplacer\Brand\Model\Brand $brand */
+        /** @var Brand $brand */
         $brand = $this->objectManager->getObject(Brand::class);
         $brand->setData([
             BrandInterface::BRAND_ID => $brandId,
@@ -185,9 +185,8 @@ class BrandProcessorTest extends TestCase
         ];
         $this->storageMock->method('deleteByData')->with($deletionFilterData);
 
-        $this->brandProcessor->deleteUrlRewrites($brand, $storeId);
+        static::assertEquals(true, $this->brandProcessor->deleteUrlRewrites($brand, $storeId));
     }
-
 
     public function testProcessBrandListingUrlRewrites()
     {
@@ -221,6 +220,6 @@ class BrandProcessorTest extends TestCase
 
         $this->storageMock->method('replace')->with([$urlRewrite1, $urlRewrite2]);
 
-        $this->brandProcessor->processBrandListingUrlRewrites();
+        static::assertEquals(true, $this->brandProcessor->processBrandListingUrlRewrites());
     }
 }
