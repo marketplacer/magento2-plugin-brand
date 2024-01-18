@@ -22,6 +22,11 @@ class BrandEditDataProvider extends AbstractDataProvider
     protected $collectionFactory;
 
     /**
+     * @var ?array
+     */
+    private $loadedData;
+
+    /**
      * DataProvider constructor.
      * @param string $name
      * @param string $primaryFieldName
