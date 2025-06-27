@@ -76,8 +76,8 @@ class Collection extends AbstractCollection implements BrandCollectionInterface
         StoreRepositoryInterface $storeRepository,
         AttributeOptionHandler $attributeOptionHandler,
         BrandAttributeRetrieverInterface $brandAttributeRetriever,
-        AdapterInterface $connection = null,
-        AbstractDb $resource = null
+        ?AdapterInterface $connection = null,
+        ?AbstractDb $resource = null
     ) {
         $this->storeRepository = $storeRepository;
         $this->attributeOptionHandler = $attributeOptionHandler;
